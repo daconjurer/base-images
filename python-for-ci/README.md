@@ -6,8 +6,9 @@ essential tools pre-installed.
 
 ## Features
 
-- Python ${PYTHON_VERSION} (configurable via build arg)
-- Poetry 2.0.0 for dependency management
+- **Python** with version configurable via build arg `${PYTHON_VERSION}`
+- **Poetry** 2.0.0 for dependency management
+- **Make** for running the different scripts in a convenient way
 - Multi-architecture support (amd64/arm64)
 - Virtual environment enabled by default
 

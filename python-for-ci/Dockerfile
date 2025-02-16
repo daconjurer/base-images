@@ -13,6 +13,7 @@ FROM --platform=$TARGETPLATFORM python:${PYTHON_VERSION}-slim as python-base
 FROM python-base as builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    make \
     curl \
     # Poetry
     && curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry POETRY_VERSION=2.0.0 python3 - \
@@ -25,6 +26,7 @@ FROM python-base as final
 
 # Copy the installations
 COPY --from=builder /opt/poetry /opt/poetry
+COPY --from=builder /usr/bin/make /usr/bin/make
 
 # Set working directory with Poetry and a venv enabled
 WORKDIR /app
