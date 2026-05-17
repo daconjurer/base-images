@@ -7,10 +7,10 @@ ARG PYTHON_VERSION=3.12
 ARG TARGETARCH
 ARG TARGETPLATFORM=linux/amd64
 
-FROM --platform=$TARGETPLATFORM python:${PYTHON_VERSION}-slim as python-base
+FROM --platform=$TARGETPLATFORM python:${PYTHON_VERSION}-slim AS python-base
 
 # Builder stage
-FROM python-base as builder
+FROM python-base AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     make \
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get autoremove -y
 
 # Final stage
-FROM python-base as final
+FROM python-base AS final
 
 # Copy the installations
 COPY --from=builder /opt/poetry /opt/poetry
@@ -34,4 +34,4 @@ RUN python -m venv /app/.venv
 ENV PATH="/opt/poetry/bin:/app/.venv/bin:$PATH"
 
 # Default command
-CMD ["bash"] 
+CMD ["bash"]
