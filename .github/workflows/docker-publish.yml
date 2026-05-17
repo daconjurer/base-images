@@ -1,0 +1,63 @@
+name: Publish Docker Hub images
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect changed image stacks
+    runs-on: ubuntu-latest
+    outputs:
+      python_for_ci: ${{ steps.filter.outputs.python_for_ci }}
+      rust_for_ci: ${{ steps.filter.outputs.rust_for_ci }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python_for_ci:
+              - 'python-for-ci/**'
+            rust_for_ci:
+              - 'rust-for-ci/**'
+
+  python-for-ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version: ["3.12", "3.13", "3.14"]
+    name: Build & push python-for-ci (${{ matrix.python_version }})
+    needs: changes
+    if: needs.changes.outputs.python_for_ci == 'true'
+    uses: ./.github/workflows/reusable-docker-build-push.yml
+    with:
+      context: python-for-ci
+      dockerfile: python-for-ci/Dockerfile
+      image_name: python-for-ci
+      platforms: linux/amd64,linux/arm64
+      tags: |
+        ${{ matrix.python_version }}-${{ github.sha }}
+        ${{ matrix.python_version }}-latest
+      build_args: |
+        PYTHON_VERSION=${{ matrix.python_version }}
+
+  rust-for-ci:
+    name: Build & push rust-for-ci
+    needs: changes
+    if: needs.changes.outputs.rust_for_ci == 'true'
+    uses: ./.github/workflows/reusable-docker-build-push.yml
+    with:
+      context: rust-for-ci
+      dockerfile: rust-for-ci/Dockerfile
+      image_name: rust-for-ci
+      platforms: linux/amd64,linux/arm64
+      tags: |
+        1.85-${{ github.sha }}
+        1.85-latest
