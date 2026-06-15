@@ -1,6 +1,6 @@
 stages: [build, publish]
 
 include:
-  - component: $CI_SERVER_FQDN/vs-software/ci/ci-components/container-image@1.2.0
+  - component: $CI_SERVER_FQDN/vs-software/ci/ci-components/container-image@1.2.1
     inputs:
       language_version: "3.12"
