@@ -3,4 +3,5 @@ stages: [build, publish]
 include:
   - component: $CI_SERVER_FQDN/vs-software/ci/ci-components/container-image@main
     inputs:
+      context: python-for-ci/
       language_version: "3.12"
