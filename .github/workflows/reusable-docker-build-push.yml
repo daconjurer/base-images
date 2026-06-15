@@ -32,6 +32,14 @@ on:
         required: false
         default: ""
 
+    secrets:
+      DOCKER_USERNAME:
+        description: Docker Hub username (typically from an environment secret)
+        required: true
+      DOCKER_PASSWORD:
+        description: Docker Hub token / PAT (typically from an environment secret)
+        required: true
+
 jobs:
   build-push:
     runs-on: ubuntu-latest
