@@ -16,6 +16,7 @@ jobs:
     outputs:
       python_for_ci: ${{ steps.filter.outputs.python_for_ci }}
       rust_for_ci: ${{ steps.filter.outputs.rust_for_ci }}
+      golang_for_ci: ${{ steps.filter.outputs.golang_for_ci }}
     steps:
       - uses: actions/checkout@v4
 
@@ -27,6 +28,8 @@ jobs:
               - 'python-for-ci/**'
             rust_for_ci:
               - 'rust-for-ci/**'
+            golang_for_ci:
+              - 'golang-for-ci/**'
 
   python-for-ci:
     strategy:
@@ -36,7 +39,11 @@ jobs:
     name: Build & push python-for-ci (${{ matrix.python_version }})
     needs: changes
     if: needs.changes.outputs.python_for_ci == 'true'
+    environment: base
     uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     with:
       context: python-for-ci
       dockerfile: python-for-ci/Dockerfile
@@ -52,7 +59,11 @@ jobs:
     name: Build & push rust-for-ci
     needs: changes
     if: needs.changes.outputs.rust_for_ci == 'true'
+    environment: base
     uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     with:
       context: rust-for-ci
       dockerfile: rust-for-ci/Dockerfile
@@ -61,3 +72,21 @@ jobs:
       tags: |
         1.85-${{ github.sha }}
         1.85-latest
+
+  golang-for-ci:
+    name: Build & push golang-for-ci
+    needs: changes
+    if: needs.changes.outputs.golang_for_ci == 'true'
+    environment: base
+    uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    with:
+      context: golang-for-ci
+      dockerfile: golang-for-ci/Dockerfile
+      image_name: golang-for-ci
+      platforms: linux/amd64,linux/arm64
+      tags: |
+        1.25.0-${{ github.sha }}
+        1.25.0-latest
