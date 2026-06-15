@@ -1,7 +1,10 @@
 # syntax = docker/dockerfile:1.2
 
+# Build argument for Go version (official image tag suffix, e.g. 1.26.3 → golang:1.26.3-bookworm).
+ARG GO_VERSION=1.26.3
+
 # Let BuildKit choose the runtime platform per invocation (`docker build/buildx --platform`).
-FROM golang:1.25.0-bookworm
+FROM golang:${GO_VERSION}-bookworm
 
 ARG TARGETARCH
 

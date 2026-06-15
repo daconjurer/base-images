@@ -3,35 +3,51 @@
 # Build argument for Python version
 ARG PYTHON_VERSION=3.12
 
+# Tool versions
+ARG UV_VERSION=0.11.21
+ARG JUST_VERSION=1.52.0
+
 # Platform args for multi-arch builds
-ARG TARGETARCH
 ARG TARGETPLATFORM=linux/amd64
 
 FROM --platform=$TARGETPLATFORM python:${PYTHON_VERSION}-slim AS python-base
 
-# Builder stage
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
+
+# Builder stage — just prebuilt binary (multi-arch)
 FROM python-base AS builder
 
+ARG JUST_VERSION
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    make \
+    ca-certificates \
     curl \
-    # Poetry
-    && curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry POETRY_VERSION=2.0.0 python3 - \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get remove -y curl \
-    && apt-get autoremove -y
+    tar \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN set -ex \
+    && case "$(dpkg --print-architecture)" in \
+        amd64) just_arch=x86_64-unknown-linux-musl ;; \
+        arm64) just_arch=aarch64-unknown-linux-musl ;; \
+        *) echo "unsupported architecture: $(dpkg --print-architecture)" >&2; exit 1 ;; \
+       esac \
+    && curl -fsSL \
+        "https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${just_arch}.tar.gz" \
+        -o /tmp/just.tar.gz \
+    && tar -xzf /tmp/just.tar.gz -C /usr/local/bin just \
+    && rm /tmp/just.tar.gz \
+    && just --version
 
 # Final stage
 FROM python-base AS final
 
-# Copy the installations
-COPY --from=builder /opt/poetry /opt/poetry
-COPY --from=builder /usr/bin/make /usr/bin/make
+COPY --from=builder /usr/local/bin/just /usr/local/bin/just
+COPY --from=uv /uv /uvx /usr/local/bin/
 
-# Set working directory with Poetry and a venv enabled
 WORKDIR /app
-RUN python -m venv /app/.venv
-ENV PATH="/opt/poetry/bin:/app/.venv/bin:$PATH"
+RUN uv venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
 
-# Default command
+RUN uv --version
+
 CMD ["bash"]
