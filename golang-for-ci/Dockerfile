@@ -3,12 +3,14 @@
 # Build argument for Go version (official image tag suffix, e.g. 1.26.3 → golang:1.26.3-bookworm).
 ARG GO_VERSION=1.26.3
 
-# Let BuildKit choose the runtime platform per invocation (`docker build/buildx --platform`).
-FROM golang:${GO_VERSION}-bookworm
+# Platform args for multi-arch builds
+ARG TARGETPLATFORM=linux/amd64
+
+FROM --platform=$TARGETPLATFORM golang:${GO_VERSION}-bookworm
 
 ARG TARGETARCH
 
-# Module path is github.com/go-task/task/v3 (see https://github.com/go-task/task)
+# Release tag matching assets under https://github.com/go-task/task/releases
 ARG TASK_VERSION=v3.49.1
 # Semantic version matching release assets under https://github.com/golangci/golangci-lint/releases
 ARG GOLANGCI_LINT_VERSION=2.12.2
@@ -36,8 +38,12 @@ RUN set -ex \
     && rm /tmp/gcl.tgz \
     && golangci-lint version
 
-RUN go install github.com/go-task/task/v3/cmd/task@${TASK_VERSION} \
-    && go clean -cache -modcache \
-    && rm -rf /tmp/*
+RUN set -ex \
+    && curl -fsSL \
+        "https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TARGETARCH}.tar.gz" \
+        -o /tmp/task.tgz \
+    && tar -xzf /tmp/task.tgz -C /go/bin task \
+    && rm /tmp/task.tgz \
+    && task --version
 
 CMD ["bash"]
