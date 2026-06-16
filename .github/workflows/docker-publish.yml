@@ -56,7 +56,11 @@ jobs:
         PYTHON_VERSION=${{ matrix.python_version }}
 
   rust-for-ci:
-    name: Build & push rust-for-ci
+    strategy:
+      fail-fast: false
+      matrix:
+        rust_version: ["1.85"]
+    name: Build & push rust-for-ci (${{ matrix.rust_version }})
     needs: changes
     if: needs.changes.outputs.rust_for_ci == 'true'
     environment: base
@@ -70,8 +74,10 @@ jobs:
       image_name: rust-for-ci
       platforms: linux/amd64,linux/arm64
       tags: |
-        1.85-${{ github.sha }}
-        1.85-latest
+        ${{ matrix.rust_version }}-${{ github.sha }}
+        ${{ matrix.rust_version }}-latest
+      build_args: |
+        RUST_VERSION=${{ matrix.rust_version }}
 
   golang-for-ci:
     name: Build & push golang-for-ci
