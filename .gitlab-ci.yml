@@ -3,6 +3,7 @@ stages: [build, publish]
 include:
   - component: $CI_SERVER_FQDN/vs-software/ci/ci-components/container-image@main
     inputs:
+      name: python-for-ci
       image_path: python-for-ci
       context: python-for-ci/
       dockerfile: python-for-ci/Dockerfile
@@ -10,6 +11,7 @@ include:
       version_build_arg: PYTHON_VERSION
   - component: $CI_SERVER_FQDN/vs-software/ci/ci-components/container-image@main
     inputs:
+      name: rust-for-ci
       image_path: rust-for-ci
       context: rust-for-ci/
       dockerfile: rust-for-ci/Dockerfile
@@ -17,6 +19,7 @@ include:
       version_build_arg: RUST_VERSION
   - component: $CI_SERVER_FQDN/vs-software/ci/ci-components/container-image@main
     inputs:
+      name: go-for-ci
       image_path: golang-for-ci
       context: golang-for-ci/
       dockerfile: golang-for-ci/Dockerfile
