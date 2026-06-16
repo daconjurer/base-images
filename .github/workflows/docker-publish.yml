@@ -39,11 +39,7 @@ jobs:
     name: Build & push python-for-ci (${{ matrix.python_version }})
     needs: changes
     if: needs.changes.outputs.python_for_ci == 'true'
-    environment: base
     uses: ./.github/workflows/reusable-docker-build-push.yml
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     with:
       context: python-for-ci
       dockerfile: python-for-ci/Dockerfile
@@ -63,11 +59,7 @@ jobs:
     name: Build & push rust-for-ci (${{ matrix.rust_version }})
     needs: changes
     if: needs.changes.outputs.rust_for_ci == 'true'
-    environment: base
     uses: ./.github/workflows/reusable-docker-build-push.yml
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     with:
       context: rust-for-ci
       dockerfile: rust-for-ci/Dockerfile
@@ -83,11 +75,7 @@ jobs:
     name: Build & push golang-for-ci
     needs: changes
     if: needs.changes.outputs.golang_for_ci == 'true'
-    environment: base
     uses: ./.github/workflows/reusable-docker-build-push.yml
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     with:
       context: golang-for-ci
       dockerfile: golang-for-ci/Dockerfile
