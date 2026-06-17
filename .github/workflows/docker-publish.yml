@@ -17,6 +17,7 @@ jobs:
       python_for_ci: ${{ steps.filter.outputs.python_for_ci }}
       rust_for_ci: ${{ steps.filter.outputs.rust_for_ci }}
       golang_for_ci: ${{ steps.filter.outputs.golang_for_ci }}
+      ci_docker_client: ${{ steps.filter.outputs.ci_docker_client }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,6 +31,8 @@ jobs:
               - 'rust-for-ci/**'
             golang_for_ci:
               - 'golang-for-ci/**'
+            ci_docker_client:
+              - 'ci-docker-client/**'
 
   python-for-ci:
     strategy:
@@ -84,3 +87,20 @@ jobs:
       tags: |
         1.25.0-${{ github.sha }}
         1.25.0-latest
+
+  ci-docker-client:
+    name: Build & push ci-docker-client
+    needs: changes
+    if: needs.changes.outputs.ci_docker_client == 'true'
+    uses: ./.github/workflows/reusable-docker-build-push.yml
+    with:
+      context: ci-docker-client
+      dockerfile: ci-docker-client/Dockerfile
+      image_name: ci-docker-client
+      platforms: linux/amd64,linux/arm64
+      tags: |
+        27.5.1-2.32.4-${{ github.sha }}
+        27.5.1-2.32.4-latest
+      build_args: |
+        DOCKER_CLI_VERSION=27.5.1
+        COMPOSE_VERSION=2.32.4
