@@ -1,4 +1,5 @@
 # syntax = docker/dockerfile:1.2
+# CI image with Docker CLI + Compose from ci-docker-client.
 
 # Build argument for Rust version
 ARG RUST_VERSION=1.85
