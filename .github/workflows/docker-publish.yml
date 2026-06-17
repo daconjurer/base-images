@@ -43,6 +43,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.python_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets: inherit
     with:
       context: python-for-ci
       dockerfile: python-for-ci/Dockerfile
@@ -63,6 +64,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.rust_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets: inherit
     with:
       context: rust-for-ci
       dockerfile: rust-for-ci/Dockerfile
@@ -79,6 +81,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.golang_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets: inherit
     with:
       context: golang-for-ci
       dockerfile: golang-for-ci/Dockerfile
@@ -93,6 +96,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.ci_docker_client == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets: inherit
     with:
       context: ci-docker-client
       dockerfile: ci-docker-client/Dockerfile
