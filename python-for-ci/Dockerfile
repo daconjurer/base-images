@@ -9,6 +9,9 @@ ARG JUST_VERSION=1.52.0
 
 # Platform args for multi-arch builds
 ARG TARGETPLATFORM=linux/amd64
+ARG DOCKER_CLIENT_IMAGE=dockerpaps/ci-docker-client:27.5.1-2.32.4-latest
+
+FROM --platform=$TARGETPLATFORM ${DOCKER_CLIENT_IMAGE} AS dockercli
 
 FROM --platform=$TARGETPLATFORM python:${PYTHON_VERSION}-slim AS python-base
 
@@ -43,11 +46,14 @@ FROM python-base AS final
 
 COPY --from=builder /usr/local/bin/just /usr/local/bin/just
 COPY --from=uv /uv /uvx /usr/local/bin/
+COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=dockercli /usr/local/lib/docker/cli-plugins/ /usr/local/lib/docker/cli-plugins/
 
 WORKDIR /app
 RUN uv venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
 RUN uv --version
+RUN docker --version && docker compose version
 
 CMD ["bash"]

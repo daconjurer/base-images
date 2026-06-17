@@ -54,6 +54,7 @@ jobs:
         ${{ matrix.python_version }}-latest
       build_args: |
         PYTHON_VERSION=${{ matrix.python_version }}
+        DOCKER_CLIENT_IMAGE=${{ secrets.DOCKER_USERNAME }}/ci-docker-client:27.5.1-2.32.4-latest
 
   rust-for-ci:
     strategy:
@@ -75,6 +76,7 @@ jobs:
         ${{ matrix.rust_version }}-latest
       build_args: |
         RUST_VERSION=${{ matrix.rust_version }}
+        DOCKER_CLIENT_IMAGE=${{ secrets.DOCKER_USERNAME }}/ci-docker-client:27.5.1-2.32.4-latest
 
   golang-for-ci:
     name: Build & push golang-for-ci
@@ -90,6 +92,8 @@ jobs:
       tags: |
         1.25.0-${{ github.sha }}
         1.25.0-latest
+      build_args: |
+        DOCKER_CLIENT_IMAGE=${{ secrets.DOCKER_USERNAME }}/ci-docker-client:27.5.1-2.32.4-latest
 
   ci-docker-client:
     name: Build & push ci-docker-client
