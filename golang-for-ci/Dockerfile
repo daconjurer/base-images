@@ -1,4 +1,5 @@
 # syntax = docker/dockerfile:1.2
+# CI image with Docker CLI + Compose from ci-docker-client.
 
 # Build argument for Go version (official image tag suffix, e.g. 1.26.3 → golang:1.26.3-bookworm).
 ARG GO_VERSION=1.26.3
