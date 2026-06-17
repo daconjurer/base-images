@@ -1,4 +1,5 @@
 # syntax = docker/dockerfile:1.2
+# Reusable Docker CLI + Compose client image for CI workloads.
 
 ARG TARGETPLATFORM=linux/amd64
 FROM --platform=$TARGETPLATFORM debian:bookworm-slim
