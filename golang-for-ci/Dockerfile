@@ -5,6 +5,9 @@ ARG GO_VERSION=1.26.3
 
 # Platform args for multi-arch builds
 ARG TARGETPLATFORM=linux/amd64
+ARG DOCKER_CLIENT_IMAGE=dockerpaps/ci-docker-client:27.5.1-2.32.4-latest
+
+FROM --platform=$TARGETPLATFORM ${DOCKER_CLIENT_IMAGE} AS dockercli
 
 FROM --platform=$TARGETPLATFORM golang:${GO_VERSION}-bookworm
 
@@ -45,5 +48,10 @@ RUN set -ex \
     && tar -xzf /tmp/task.tgz -C /go/bin task \
     && rm /tmp/task.tgz \
     && task --version
+
+COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=dockercli /usr/local/lib/docker/cli-plugins/ /usr/local/lib/docker/cli-plugins/
+
+RUN docker --version && docker compose version
 
 CMD ["bash"]
