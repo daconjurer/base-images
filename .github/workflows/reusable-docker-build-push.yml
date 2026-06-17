@@ -31,6 +31,13 @@ on:
         type: string
         required: false
         default: ""
+      docker_client_tag:
+        description: >-
+          When set, appends DOCKER_CLIENT_IMAGE=<DOCKER_USERNAME>/ci-docker-client:<tag>
+          as a build-arg (secrets are not available in caller workflow inputs).
+        type: string
+        required: false
+        default: ""
 
 jobs:
   build-push:
@@ -82,6 +89,31 @@ jobs:
             printf '%s\n' "$delim"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Compose build args
+        id: build_args
+        env:
+          RAW: ${{ inputs.build_args }}
+          TAG: ${{ inputs.docker_client_tag }}
+          USER: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          set -euo pipefail
+          out="$RAW"
+          if [ -n "$TAG" ]; then
+            line="DOCKER_CLIENT_IMAGE=${USER}/ci-docker-client:${TAG}"
+            if [ -z "$out" ]; then
+              out="$line"
+            else
+              out="${out}"$'\n'"${line}"
+            fi
+          fi
+
+          delim="$(uuidgen)"
+          {
+            printf 'args<<%s\n' "$delim"
+            printf '%s\n' "$out"
+            printf '%s\n' "$delim"
+          } >> "$GITHUB_OUTPUT"
+
       - uses: docker/build-push-action@v6
         with:
           context: ${{ inputs.context }}
@@ -89,4 +121,4 @@ jobs:
           platforms: ${{ inputs.platforms }}
           push: true
           tags: ${{ steps.refs.outputs.tags }}
-          build-args: ${{ inputs.build_args }}
+          build-args: ${{ steps.build_args.outputs.args }}
