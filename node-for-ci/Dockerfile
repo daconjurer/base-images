@@ -1,5 +1,6 @@
 # syntax = docker/dockerfile:1.2
 # CI image with Docker CLI + Compose from ci-docker-client.
+# Retrigger GitLab CI publish pipeline.
 
 # Build argument for Node.js version (official image tag, e.g. 22 → node:22-slim).
 ARG NODE_VERSION=22
