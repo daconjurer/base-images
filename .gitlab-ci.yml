@@ -25,3 +25,11 @@ include:
       dockerfile: golang-for-ci/Dockerfile
       language_version: "1.26.3"
       version_build_arg: GO_VERSION
+  - component: $CI_SERVER_FQDN/vs-software/ci/ci-components/container-image@main
+    inputs:
+      name: node-for-ci
+      image_path: node-for-ci
+      context: node-for-ci/
+      dockerfile: node-for-ci/Dockerfile
+      language_version: "22"
+      version_build_arg: NODE_VERSION

@@ -17,6 +17,7 @@ jobs:
       python_for_ci: ${{ steps.filter.outputs.python_for_ci }}
       rust_for_ci: ${{ steps.filter.outputs.rust_for_ci }}
       golang_for_ci: ${{ steps.filter.outputs.golang_for_ci }}
+      node_for_ci: ${{ steps.filter.outputs.node_for_ci }}
       ci_docker_client: ${{ steps.filter.outputs.ci_docker_client }}
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +32,8 @@ jobs:
               - 'rust-for-ci/**'
             golang_for_ci:
               - 'golang-for-ci/**'
+            node_for_ci:
+              - 'node-for-ci/**'
             ci_docker_client:
               - 'ci-docker-client/**'
 
@@ -92,6 +95,28 @@ jobs:
       tags: |
         1.25.0-${{ github.sha }}
         1.25.0-latest
+      docker_client_tag: 27.5.1-2.32.4-latest
+
+  node-for-ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: ["20", "22"]
+    name: Build & push node-for-ci (${{ matrix.node_version }})
+    needs: changes
+    if: needs.changes.outputs.node_for_ci == 'true'
+    uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets: inherit
+    with:
+      context: node-for-ci
+      dockerfile: node-for-ci/Dockerfile
+      image_name: node-for-ci
+      platforms: linux/amd64,linux/arm64
+      tags: |
+        ${{ matrix.node_version }}-${{ github.sha }}
+        ${{ matrix.node_version }}-latest
+      build_args: |
+        NODE_VERSION=${{ matrix.node_version }}
       docker_client_tag: 27.5.1-2.32.4-latest
 
   ci-docker-client:
