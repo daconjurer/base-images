@@ -93,8 +93,8 @@ jobs:
       image_name: golang-for-ci
       platforms: linux/amd64,linux/arm64
       tags: |
-        1.25.0-${{ github.sha }}
-        1.25.0-latest
+        1.26.3-${{ github.sha }}
+        1.26.3-latest
       docker_client_tag: 27.5.1-2.32.4-latest
 
   node-for-ci:
