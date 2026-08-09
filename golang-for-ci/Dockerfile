@@ -55,7 +55,7 @@ FROM --platform=$TARGETPLATFORM golang:${GO_VERSION}-alpine@${GO_IMAGE_DIGEST}
 
 ENV PATH=/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN apk add --no-cache ca-certificates git
+RUN apk add --no-cache ca-certificates git bash
 
 # Login shells reset PATH via /etc/profile unless we prepend in profile.d
 RUN printf '%s\n' \
