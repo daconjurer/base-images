@@ -44,12 +44,12 @@ jobs:
       fail-fast: false
       matrix:
         python_version: ["3.12", "3.13", "3.14"]
-    name: Build & push python-for-ci (${{ matrix.python_version }})
     needs: changes
     if: needs.changes.outputs.python_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
     secrets: inherit
     with:
+      name: Build & push python-for-ci (${{ matrix.python_version }})
       context: python-for-ci
       dockerfile: python-for-ci/Dockerfile
       image_name: python-for-ci
@@ -66,12 +66,12 @@ jobs:
       fail-fast: false
       matrix:
         rust_version: ["1.85"]
-    name: Build & push rust-for-ci (${{ matrix.rust_version }})
     needs: changes
     if: needs.changes.outputs.rust_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
     secrets: inherit
     with:
+      name: Build & push rust-for-ci (${{ matrix.rust_version }})
       context: rust-for-ci
       dockerfile: rust-for-ci/Dockerfile
       image_name: rust-for-ci
@@ -84,12 +84,12 @@ jobs:
       docker_client_tag: 27.5.1-2.32.4-latest
 
   golang-for-ci:
-    name: Build & push golang-for-ci
     needs: changes
     if: needs.changes.outputs.golang_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
     secrets: inherit
     with:
+      name: Build & push golang-for-ci
       context: golang-for-ci
       dockerfile: golang-for-ci/Dockerfile
       image_name: golang-for-ci
@@ -107,12 +107,12 @@ jobs:
       fail-fast: false
       matrix:
         node_version: ["20", "22"]
-    name: Build & push node-for-ci (${{ matrix.node_version }})
     needs: changes
     if: needs.changes.outputs.node_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
     secrets: inherit
     with:
+      name: Build & push node-for-ci (${{ matrix.node_version }})
       context: node-for-ci
       dockerfile: node-for-ci/Dockerfile
       image_name: node-for-ci
@@ -125,12 +125,12 @@ jobs:
       docker_client_tag: 27.5.1-2.32.4-latest
 
   ci-docker-client:
-    name: Build & push ci-docker-client
     needs: changes
     if: needs.changes.outputs.ci_docker_client == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
     secrets: inherit
     with:
+      name: Build & push ci-docker-client
       context: ci-docker-client
       dockerfile: ci-docker-client/Dockerfile
       image_name: ci-docker-client
