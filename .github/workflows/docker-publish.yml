@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    description: Manually trigger image build and push to Docker Hub and GHCR
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -95,6 +97,9 @@ jobs:
       tags: |
         1.26.3-${{ github.sha }}
         1.26.3-latest
+      build_args: |
+        TASK_VERSION=v3.49.1
+        GOLANGCI_LINT_VERSION=2.12.2
       docker_client_tag: 27.5.1-2.32.4-latest
 
   node-for-ci:
