@@ -3,6 +3,11 @@ name: Reusable Docker build verify (buildx, no push)
 on:
   workflow_call:
     inputs:
+      name:
+        description: Job display name
+        type: string
+        required: false
+        default: Build
       context:
         description: Dockerfile build context directory (repository-relative path)
         type: string
@@ -25,7 +30,7 @@ on:
 
 jobs:
   build:
-    name: Build (no push)
+    name: ${{ inputs.name }}
     runs-on: ubuntu-latest
 
     permissions:
