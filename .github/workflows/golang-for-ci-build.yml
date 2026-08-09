@@ -8,6 +8,8 @@ on:
       - 'golang-for-ci/**'
       - '.github/workflows/golang-for-ci-build.yml'
       - '.github/workflows/reusable-docker-build-verify.yml'
+  workflow_dispatch:
+    description: Manually trigger build and verification without path changes
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
