@@ -1,27 +1,32 @@
 # Python for CI
 
 This Docker image is designed for continuous integration (CI) workflows with
-Python. It provides a lightweight environment based on Python slim images with
-essential tools pre-installed.
+Python. It is built from the official `python` slim image on Debian.
 
 ## Features
 
-- **Python** with version configurable via build arg `${PYTHON_VERSION}`
+- **Python** runtime, version configurable via build arg `${PYTHON_VERSION}` (`python:${PYTHON_VERSION}-slim` base image, default **3.12**)
 - [**uv**](https://docs.astral.sh/uv/) for dependency and environment management
-  (`uv sync`, `uv run`, …), pinned via `${UV_VERSION}` (default **0.11.21**)
+  (`uv sync`, `uv run`, …), copied from the `ghcr.io/astral-sh/uv` image, pinned to **0.11.21** by default
 - [**just**](https://github.com/casey/just) task runner for project commands
-  (`just …`), pinned via `${JUST_VERSION}` (default **1.52.0**)
+  (`just …`), pinned to **1.52.0** by default
+- **Docker CLI** and **Docker Compose** for building/pushing container images
 - Multi-architecture support (amd64/arm64)
 - Virtual environment at `/app/.venv` enabled by default
 
-Pinned tool versions default to reproducible installs and can be overridden at
-build time (see Dockerfile `ARG` declarations for `${UV_VERSION}` and
-`${JUST_VERSION}`).
+Pinned tool versions and base image digest default to reproducible, verified installs.
+Versions can be overridden at build time via Dockerfile `ARG` declarations.
+Base image digest is pinned to prevent tag repointing; update it alongside `PYTHON_VERSION` when upgrading.
+
+### Supply Chain Security
+
+Binary downloads (just) are verified against their published SHA256 checksums before extraction.
+Base images (python, uv, ci-docker-client) are pinned to their content digest to ensure immutability.
 
 ## Usage
 
 Use this image as a base in CI pipelines or locally when you want Python, uv,
-and just without installing them on the runner.
+just, and Docker without installing them on the runner.
 
 Typical workflow in a project with `pyproject.toml`, `uv.lock`, and a
 `justfile`:
