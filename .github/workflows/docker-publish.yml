@@ -43,7 +43,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python_version: ["3.12", "3.13", "3.14"]
+        include:
+          - python_version: "3.12"
+            python_image_digest: sha256:229a2c5bfa27522db7815ea81f9bed70af17ccb9de9fc7ad142b1877b5830d36
+          - python_version: "3.13"
+            python_image_digest: sha256:9662417aace5ae7b8e2609cce472b72a8958e134ba372808abe9cc1a0c0125e6
+          - python_version: "3.14"
+            python_image_digest: sha256:a7fb1e634c4a578f9e0bd6327f11a3cde11b7a9395f48e24360c0988bcc5c2bc
     needs: changes
     if: needs.changes.outputs.python_for_ci == 'true'
     uses: ./.github/workflows/reusable-docker-build-push.yml
@@ -59,6 +65,9 @@ jobs:
         ${{ matrix.python_version }}-latest
       build_args: |
         PYTHON_VERSION=${{ matrix.python_version }}
+        PYTHON_IMAGE_DIGEST=${{ matrix.python_image_digest }}
+        UV_VERSION=0.11.21
+        JUST_VERSION=1.52.0
       docker_client_tag: 27.5.1-2.32.4-latest
 
   rust-for-ci:
