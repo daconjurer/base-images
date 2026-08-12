@@ -105,7 +105,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node_version: ["20", "22"]
+        include:
+          - node_version: "20"
+            node_image_digest: sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+          - node_version: "22"
+            node_image_digest: sha256:d649c27dae7ba0137b3cef5dd75baa422c08dc3d9e3fc0c23dfb172dc3cc6436
     needs: changes
     if: needs.changes.outputs.node_for_ci == 'true' || github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/reusable-docker-build-verify.yml
@@ -116,6 +120,9 @@ jobs:
       platforms: linux/amd64,linux/arm64
       build_args: |
         NODE_VERSION=${{ matrix.node_version }}
+        NODE_IMAGE_DIGEST=${{ matrix.node_image_digest }}
+        JUST_VERSION=1.52.0
+        PNPM_VERSION=10.32.1
 
   ci-docker-client:
     needs: changes
