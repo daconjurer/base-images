@@ -45,6 +45,10 @@ RUN set -ex \
 # Final stage
 FROM python-base AS final
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libatomic1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /usr/local/bin/just /usr/local/bin/just
 COPY --from=uv /uv /uvx /usr/local/bin/
 COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
