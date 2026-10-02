@@ -105,6 +105,7 @@ jobs:
         RUST_VERSION=${{ matrix.rust_version }}
         NODE_VERSION=20.18.0
         PNPM_VERSION=9.15.0
+        TRUNK_VERSION=0.21.14
 
   golang-for-ci:
     needs: changes

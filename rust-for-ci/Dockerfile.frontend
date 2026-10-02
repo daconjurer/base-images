@@ -23,7 +23,21 @@ RUN rustup component add rustfmt clippy \
     && rustup target add wasm32-unknown-unknown
 
 # Trunk builds Rust/WASM projects (e.g. Yew, Leptos).
-RUN cargo install --locked trunk
+# Prebuilt binary is used instead of `cargo install` to avoid a multi-minute compile.
+ARG TRUNK_VERSION=0.21.14
+RUN arch=$(dpkg --print-architecture); \
+    case "$arch" in \
+        amd64) trunk_arch=x86_64 ;; \
+        arm64) trunk_arch=aarch64 ;; \
+        *) echo "Unsupported architecture: $arch"; exit 1 ;; \
+    esac; \
+    trunk_tarball="trunk-${trunk_arch}-unknown-linux-gnu.tar.gz"; \
+    trunk_url="https://github.com/trunk-rs/trunk/releases/download/v${TRUNK_VERSION}/${trunk_tarball}"; \
+    curl -fsSL "${trunk_url}" -o "/tmp/${trunk_tarball}"; \
+    curl -fsSL "${trunk_url}.sha256" -o "/tmp/${trunk_tarball}.sha256"; \
+    printf '%s  /tmp/%s\n' "$(cat /tmp/${trunk_tarball}.sha256)" "${trunk_tarball}" | sha256sum -c -; \
+    tar -xzf "/tmp/${trunk_tarball}" -C /usr/local/bin trunk; \
+    rm "/tmp/${trunk_tarball}" "/tmp/${trunk_tarball}.sha256"
 
 # Node.js is used by frontend toolchains that integrate with Rust/WASM apps.
 ARG NODE_VERSION=20.18.0
