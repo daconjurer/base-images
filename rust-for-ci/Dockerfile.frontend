@@ -1,0 +1,43 @@
+# syntax = docker/dockerfile:1.2
+# CI image for Rust frontend apps (WASM + Trunk + Node.js toolchain).
+
+# Build argument for Rust version (official image tag suffix, e.g. 1.85 → rust:1.85-slim).
+ARG RUST_VERSION=1.85
+# Digest of the rust:${RUST_VERSION}-slim manifest list, pinned so the tag can't be
+# silently repointed. Update together with RUST_VERSION (`docker pull` prints the new digest).
+ARG RUST_IMAGE_DIGEST=sha256:9f841bbe9e7d8e37ceb96ed907265a3a0df7f44e3737d0b100e7907a679acb36
+
+# Platform args for multi-arch builds
+ARG TARGETARCH
+ARG TARGETPLATFORM=linux/amd64
+
+FROM --platform=$TARGETPLATFORM rust:${RUST_VERSION}-slim@${RUST_IMAGE_DIGEST}
+
+# git is required for tests and build scripts that shell out to `git`.
+# curl and ca-certificates are required to download Node.js.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN rustup component add rustfmt clippy \
+    && rustup target add wasm32-unknown-unknown
+
+# Trunk builds Rust/WASM projects (e.g. Yew, Leptos).
+RUN cargo install --locked trunk
+
+# Node.js is used by frontend toolchains that integrate with Rust/WASM apps.
+ARG NODE_VERSION=20.18.0
+ARG PNPM_VERSION=9.15.0
+RUN arch=$(dpkg --print-architecture); \
+    case "$arch" in \
+        amd64) node_arch=x64 ;; \
+        arm64) node_arch=arm64 ;; \
+        *) echo "Unsupported architecture: $arch"; exit 1 ;; \
+    esac; \
+    curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.gz | tar -xzf - -C /usr/local --strip-components=1 \
+    && npm install -g pnpm@${PNPM_VERSION}
+
+RUN rustup --version && cargo --version && rustfmt --version && cargo clippy --version \
+    && rustup target list --installed | grep wasm32-unknown-unknown \
+    && trunk --version \
+    && node --version && pnpm --version
