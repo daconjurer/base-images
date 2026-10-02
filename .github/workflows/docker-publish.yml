@@ -92,6 +92,29 @@ jobs:
         RUST_VERSION=${{ matrix.rust_version }}
       docker_client_tag: 27.5.1-2.32.4-latest
 
+  rust-for-ci-frontend:
+    strategy:
+      fail-fast: false
+      matrix:
+        rust_version: ["1.85"]
+    needs: changes
+    if: needs.changes.outputs.rust_for_ci == 'true'
+    uses: ./.github/workflows/reusable-docker-build-push.yml
+    secrets: inherit
+    with:
+      name: Build & push rust-for-ci-frontend (${{ matrix.rust_version }})
+      context: rust-for-ci
+      dockerfile: rust-for-ci/Dockerfile.frontend
+      image_name: rust-for-ci-frontend
+      platforms: linux/amd64,linux/arm64
+      tags: |
+        ${{ matrix.rust_version }}-${{ github.sha }}
+        ${{ matrix.rust_version }}-latest
+      build_args: |
+        RUST_VERSION=${{ matrix.rust_version }}
+        NODE_VERSION=20.18.0
+        PNPM_VERSION=9.15.0
+
   golang-for-ci:
     needs: changes
     if: needs.changes.outputs.golang_for_ci == 'true'
