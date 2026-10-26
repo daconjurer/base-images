@@ -10,6 +10,7 @@ on:
       - 'golang-for-ci/**'
       - 'node-for-ci/**'
       - 'ci-docker-client/**'
+      - 'ros2-for-ci/**'
       - '.github/workflows/docker-build-verify.yml'
       - '.github/workflows/reusable-docker-build-verify.yml'
   workflow_dispatch:
@@ -29,6 +30,7 @@ jobs:
       golang_for_ci: ${{ steps.filter.outputs.golang_for_ci }}
       node_for_ci: ${{ steps.filter.outputs.node_for_ci }}
       ci_docker_client: ${{ steps.filter.outputs.ci_docker_client }}
+      ros2_for_ci: ${{ steps.filter.outputs.ros2_for_ci }}
     steps:
       - uses: actions/checkout@v4
 
@@ -46,6 +48,8 @@ jobs:
               - 'node-for-ci/**'
             ci_docker_client:
               - 'ci-docker-client/**'
+            ros2_for_ci:
+              - 'ros2-for-ci/**'
 
   python-for-ci:
     strategy:
@@ -155,3 +159,16 @@ jobs:
       build_args: |
         DOCKER_CLI_VERSION=27.5.1
         COMPOSE_VERSION=2.32.4
+
+  ros2-for-ci:
+    needs: changes
+    if: needs.changes.outputs.ros2_for_ci == 'true' || github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/reusable-docker-build-verify.yml
+    with:
+      name: Build ros2-for-ci
+      context: ros2-for-ci
+      dockerfile: ros2-for-ci/Dockerfile
+      platforms: linux/amd64,linux/arm64
+      build_args: |
+        ROS_DISTRO=lyrical
+        POETRY_VERSION=2.1.1
