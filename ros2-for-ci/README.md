@@ -7,18 +7,20 @@ It is built from the official `ros` image on Ubuntu.
 ## Features
 
 - **ROS 2** Lyrical (`ros:lyrical-ros-base` base image), including `rclpy`
-- **Poetry** 2.1.1 in its own venv at `/opt/poetry`
-- App venv at `/opt/venv` with system site-packages, so `rclpy` is importable; `VIRTUAL_ENV` points at it, so `poetry sync` installs into it
+- **uv** 0.11.21 (`uv`, `uvx`)
+- App venv at `/opt/venv` built on the system Python with system site-packages, so `rclpy` is importable; `UV_PROJECT_ENVIRONMENT` points at it, so `uv sync` installs into it
+- `UV_PYTHON_DOWNLOADS=never`, so uv never swaps in a managed Python that cannot see ROS
 - **git** for source access
 - Multi-architecture support (amd64/arm64)
 
-Nothing project-specific is baked in: install extra ROS packages with `apt-get` and Python dependencies with `poetry install --no-root` in the job.
+Nothing project-specific is baked in: install extra ROS packages with `apt-get` and Python dependencies with `uv sync` in the job.
 
 ### Supply Chain Security
 
 The base image is pinned to its content digest to ensure immutability.
 Update `ROS_IMAGE_DIGEST` alongside `ROS_DISTRO` when upgrading.
-Poetry is installed from PyPI at a pinned version; no other binaries are downloaded.
+The uv binaries are copied from `ghcr.io/astral-sh/uv`, pinned by tag and digest.
+Update `UV_IMAGE_DIGEST` alongside `UV_VERSION` when upgrading.
 
 ## Usage
 

@@ -171,4 +171,4 @@ jobs:
       platforms: linux/amd64,linux/arm64
       build_args: |
         ROS_DISTRO=lyrical
-        POETRY_VERSION=2.1.1
+        UV_VERSION=0.11.21
