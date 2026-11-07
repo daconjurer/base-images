@@ -10,7 +10,7 @@ A collection of Docker images for continuous integration (CI) pipelines.
 | [`golang-for-ci`](golang-for-ci) | Go toolchain with Task, golangci-lint, and Docker CLI |
 | [`node-for-ci`](node-for-ci) | Node.js with pnpm, just, and Docker CLI |
 | [`python-for-ci`](python-for-ci) | Python with uv, just, and Docker CLI |
-| [`ros2-for-ci`](ros2-for-ci) | ROS 2 with uv |
+| [`ros2-for-ci`](ros2-for-ci) | ROS 2 with uv and just |
 | [`rust-for-ci`](rust-for-ci) | Rust toolchain with just and Docker CLI; includes a separate frontend variant |
 
 ## Build and Publish
