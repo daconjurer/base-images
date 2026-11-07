@@ -8,6 +8,7 @@ It is built from the official `ros` image on Ubuntu.
 
 - **ROS 2** Lyrical (`ros:lyrical-ros-base` base image), including `rclpy`
 - **uv** 0.11.21 (`uv`, `uvx`)
+- **just** 1.52.0 task runner
 - App venv at `/opt/venv` built on the system Python with system site-packages, so `rclpy` is importable; `UV_PROJECT_ENVIRONMENT` points at it, so `uv sync` installs into it
 - `UV_PYTHON_DOWNLOADS=never`, so uv never swaps in a managed Python that cannot see ROS
 - **git** for source access
@@ -21,6 +22,7 @@ The base image is pinned to its content digest to ensure immutability.
 Update `ROS_IMAGE_DIGEST` alongside `ROS_DISTRO` when upgrading.
 The uv binaries are copied from `ghcr.io/astral-sh/uv`, pinned by tag and digest.
 Update `UV_IMAGE_DIGEST` alongside `UV_VERSION` when upgrading.
+The just binary is verified against its published SHA256 checksum before extraction.
 
 ## Usage
 
